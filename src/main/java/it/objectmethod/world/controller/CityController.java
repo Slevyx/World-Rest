@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,17 +19,16 @@ public class CityController {
 	@Autowired
 	private ICityDao cityDao;
 	
-	@PostMapping("/city")
+	@GetMapping("/city")
 	public ResponseEntity<City> getCityByName(@RequestParam(name = "cityName", required = false) String cityName) {
 		City city = null;
 		ResponseEntity<City> response = null;
-		if(cityName == null) {
-			response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-		else {
-			cityName = cityName.toUpperCase();
+		if(cityName != null && !cityName.trim().isEmpty()) {
 			city = cityDao.getCityByName(cityName);
 			response = new ResponseEntity<>(city, HttpStatus.OK);
+		}
+		else {
+			response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		return response;
 	}

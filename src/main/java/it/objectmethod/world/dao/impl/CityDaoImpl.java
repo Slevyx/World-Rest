@@ -20,10 +20,22 @@ public class CityDaoImpl implements ICityDao{
 	
 	@Autowired
 	DataSource dataSource;
+	
+	private City generateCity(ResultSet result) throws SQLException {
+		City city = null;
+		city = new City();
+		city.setId(result.getInt("ID"));
+		city.setName(result.getString("Name"));
+		city.setCountryCode(result.getString("CountryCode"));
+		city.setDistrict(result.getString("District"));
+		city.setPopulation(result.getInt("Population"));
+		return city;
+	}
 
 	@Override
 	public City getCityByName(String cityName) {
 		City city = null;
+		cityName = cityName.toUpperCase();
 		String sqlQuery = "SELECT * FROM city WHERE UPPER(Name) = ?";
 		try {
 			Connection connection = dataSource.getConnection();
@@ -31,12 +43,7 @@ public class CityDaoImpl implements ICityDao{
 			statement.setString(1, cityName);
 			ResultSet result = statement.executeQuery();
 			while(result.next()) {
-				city = new City();
-				city.setId(result.getInt("ID"));
-				city.setName(result.getString("Name"));
-				city.setCountryCode(result.getString("CountryCode"));
-				city.setDistrict(result.getString("District"));
-				city.setPopulation(result.getInt("Population"));
+				city = generateCity(result);
 			}
 			result.close();
 			statement.close();
@@ -51,7 +58,6 @@ public class CityDaoImpl implements ICityDao{
 	@Override
 	public List<City> getCitiesByCountry(String countryCode) {
 		List<City> cities = new ArrayList<>();
-		City city = null;
 		String sqlQuery = "SELECT * FROM city WHERE CountryCode = ?";
 		try{
 			Connection connection = dataSource.getConnection();
@@ -59,13 +65,7 @@ public class CityDaoImpl implements ICityDao{
 			statement.setString(1, countryCode);
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				city = new City();
-				city.setId(result.getInt("ID"));
-				city.setName(result.getString("Name"));
-				city.setCountryCode(result.getString("CountryCode"));
-				city.setDistrict(result.getString("District"));
-				city.setPopulation(result.getInt("Population"));
-				cities.add(city);
+				cities.add(generateCity(result));
 			}
 			result.close();
 			statement.close();

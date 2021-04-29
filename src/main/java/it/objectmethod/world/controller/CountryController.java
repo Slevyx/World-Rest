@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,7 @@ public class CountryController {
 	@Autowired
 	private ICountryDao countryDao;
 	
-	@PostMapping("/countries")
+	@GetMapping("/countries")
 	public ResponseEntity<List<Country>> getCountriesByCountryNameContinentName(
 			@RequestParam(name = "countryName", required = false) String countryName, @RequestParam(name = "continentName", required = false) String continentName) {
 		List<Country> countriesList = new ArrayList<>();
@@ -29,8 +28,6 @@ public class CountryController {
 			response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		else {
-			countryName = countryName.toUpperCase();
-			continentName = continentName.toUpperCase();
 			countriesList = countryDao.getCountriesByCountryNameContinentName(countryName, continentName);
 			response = new ResponseEntity<>(countriesList, HttpStatus.OK);
 		}
@@ -46,7 +43,7 @@ public class CountryController {
 		return response;
 	}
 	
-	@GetMapping("/countriesByContinent")
+	@GetMapping("/continent/countries")
 	public ResponseEntity<List<Country>> getCountriesByContinent(@RequestParam(name = "continentName", required = false) String continentName) {
 		List<Country> countries = new ArrayList<>();
 		ResponseEntity<List<Country>> response = null;
@@ -55,7 +52,7 @@ public class CountryController {
 		}
 		else {
 			countries = countryDao.getCountriesbyContinentName(continentName);
-			response = new ResponseEntity<>(countries, HttpStatus.OK); 
+			response = new ResponseEntity<>(countries, HttpStatus.OK);
 		}
 		return response;
 	}

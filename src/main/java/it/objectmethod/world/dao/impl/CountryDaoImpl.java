@@ -20,27 +20,33 @@ public class CountryDaoImpl implements ICountryDao{
 	
 	@Autowired
 	DataSource dataSource;
-
-	public List<Country> getCountriesByCountryNameContinentName(String countryName, String continent) {
-		List<Country> countriesList = new ArrayList<>();
+	
+	private Country generateCountry(ResultSet result) throws SQLException {
 		Country country = null;
+		country = new Country();
+		country.setName(result.getString("Name"));
+		country.setCode(result.getString("Code"));
+		country.setContinent(result.getString("Continent"));
+		country.setPopulation(result.getInt("Population"));
+		country.setSurfaceArea(result.getFloat("SurfaceArea"));
+		return country;
+	}
+
+	public List<Country> getCountriesByCountryNameContinentName(String countryName, String continentName) {
+		List<Country> countriesList = new ArrayList<>();
+		countryName = countryName.toUpperCase();
+		continentName = continentName.toUpperCase();
 		String sqlQuery = "SELECT Name, Code, Continent, Population, SurfaceArea FROM country WHERE ('' = ? OR UPPER(Name) = ?) AND ('' = ? OR UPPER(Continent) = ?)";
 		try{
 			Connection connection = dataSource.getConnection();
 			PreparedStatement statement = connection.prepareStatement(sqlQuery);
 			statement.setString(1, countryName);
 			statement.setString(2, countryName);
-			statement.setString(3, continent);
-			statement.setString(4, continent);
+			statement.setString(3, continentName);
+			statement.setString(4, continentName);
 			ResultSet result = statement.executeQuery();
 			while(result.next()) {
-				country = new Country();
-				country.setName(result.getString("Name"));
-				country.setCode(result.getString("Code"));
-				country.setContinent(result.getString("Continent"));
-				country.setPopulation(result.getInt("Population"));
-				country.setSurfaceArea(result.getFloat("SurfaceArea"));
-				countriesList.add(country);
+				countriesList.add(generateCountry(result));
 			}
 			result.close();
 			statement.close();
@@ -76,7 +82,6 @@ public class CountryDaoImpl implements ICountryDao{
 	@Override
 	public List<Country> getCountriesbyContinentName(String continentName) {
 		List<Country> countries = new ArrayList<>();
-		Country country = null;
 		String sqlQuery = "SELECT Name, Code, Continent, Population, SurfaceArea FROM country WHERE Continent = ?";
 		try{
 			Connection connection = dataSource.getConnection();
@@ -84,13 +89,7 @@ public class CountryDaoImpl implements ICountryDao{
 			statement.setString(1, continentName);
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
-				country = new Country();
-				country.setName(result.getString("Name"));
-				country.setCode(result.getString("Code"));
-				country.setContinent(result.getString("Continent"));
-				country.setPopulation(result.getInt("Population"));
-				country.setSurfaceArea(result.getFloat("SurfaceArea"));
-				countries.add(country);
+				countries.add(generateCountry(result));
 			}
 			result.close();
 			statement.close();
