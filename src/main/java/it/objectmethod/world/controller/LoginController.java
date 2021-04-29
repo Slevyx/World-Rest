@@ -15,7 +15,7 @@ public class LoginController {
 	public ResponseEntity<User> login(@RequestParam(name = "username", required = false) String username) {
 		User user = null;
 		ResponseEntity<User> response = null;
-		if(username == null || username.isBlank()) {
+		if(username == null) {
 			response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		else {
